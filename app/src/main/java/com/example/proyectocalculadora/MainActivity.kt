@@ -62,7 +62,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
     var showTree by remember { mutableStateOf(false) }
     var tree by remember { mutableStateOf<TreeNode?>(null) }
     var errorMessage by remember { mutableStateOf("") }
-
     Column(
         modifier = modifier
             .fillMaxSize()
