@@ -145,7 +145,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
             }
         )
 
-        // Mensajes de error
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -153,8 +152,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
-
-        // Resultado
         if (result.isNotEmpty()) {
             Card(
                 modifier = Modifier
@@ -177,8 +174,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
                 )
             }
         }
-
-        // Visualización del árbol
         if (showTree && tree != null) {
             Box(
                 modifier = Modifier
@@ -194,7 +189,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
         }
     }
 }
-
 @Composable
 fun CalculatorButtons(
     onButtonClick: (String) -> Unit,
@@ -284,8 +278,6 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawTree(
         center = position,
         style = Stroke(width = 2f)
     )
-
-    // Dibujar texto
     drawIntoCanvas { canvas ->
         val paint = android.graphics.Paint().apply {
             color = android.graphics.Color.BLACK
@@ -300,8 +292,6 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawTree(
     }
 
     val verticalSpacing = 80f
-
-    // Dibujar conexiones e hijos
     node.left?.let {
         val nextHorizontalOffset = horizontalOffset * 0.6f
         val childPos = Offset(
@@ -332,30 +322,24 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawTree(
         drawTree(it, childPos, nextHorizontalOffset, depth + 1)
     }
 }
-
-// Funciones para procesar y evaluar la expresión matemática
 fun buildExpressionTree(expression: String): TreeNode {
     if (expression.isEmpty()) {
         throw Exception("La expresión está vacía")
     }
-
-    // Convertir la expresión infija a postfija usando el algoritmo Shunting Yard
     val tokens = tokenize(expression)
     val postfix = infixToPostfix(tokens)
-
-    // Construir el árbol a partir de la expresión postfija
     val stack = Stack<TreeNode>()
 
     for (token in postfix) {
         if (isOperator(token)) {
-            // Para operadores, sacar dos nodos del stack y crear un nuevo nodo
+
             if (stack.size < 2) throw Exception("Expresión inválida: insuficientes operandos")
 
             val right = stack.pop()
             val left = stack.pop()
             stack.push(TreeNode(token, left, right, isOperator = true))
         } else {
-            // Para operandos, simplemente crear un nuevo nodo y agregarlo al stack
+
             stack.push(TreeNode(token))
         }
     }
@@ -377,7 +361,7 @@ fun tokenize(expression: String): List<String> {
         }
 
         if (c.isDigit() || c == '.') {
-            // Extraer número completo (incluyendo decimales)
+
             val startIndex = i
             var hasDecimal = c == '.'
 
@@ -389,7 +373,6 @@ fun tokenize(expression: String): List<String> {
 
             result.add(expression.substring(startIndex, i))
         } else if (c == '(' || c == ')' || isOperatorChar(c)) {
-            // Operadores y paréntesis son tokens individuales
             result.add(c.toString())
             i++
         } else {
@@ -429,7 +412,7 @@ fun infixToPostfix(tokens: List<String>): List<String> {
                     result.add(stack.pop())
                 }
                 if (stack.isNotEmpty() && stack.peek() == "(") {
-                    stack.pop() // Eliminar el paréntesis abierto
+                    stack.pop()
                 } else {
                     throw Exception("Paréntesis desbalanceados")
                 }
@@ -442,7 +425,7 @@ fun infixToPostfix(tokens: List<String>): List<String> {
                 }
                 stack.push(token)
             }
-            else -> result.add(token) // Es un operando
+            else -> result.add(token)
         }
     }
 
