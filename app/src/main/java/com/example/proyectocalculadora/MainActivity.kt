@@ -6,6 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.zIndex
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.Icons
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,12 +23,10 @@ import java.util.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -62,6 +67,8 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
     var showTree by remember { mutableStateOf(false) }
     var tree by remember { mutableStateOf<TreeNode?>(null) }
     var errorMessage by remember { mutableStateOf("") }
+    var isMaximized by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -76,7 +83,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Campo de entrada para la expresión matemática
         OutlinedTextField(
             value = expression,
             onValueChange = { expression = it; errorMessage = ""; result = "" },
@@ -91,7 +97,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
             }
         )
 
-        // Botones para calcular y mostrar/ocultar árbol
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -126,7 +131,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
             }
         }
 
-        // Teclado
         CalculatorButtons(
             onButtonClick = { symbol ->
                 expression += symbol
@@ -174,17 +178,60 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
             }
         }
         if (showTree && tree != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(600.dp)
-                    .padding(vertical = 16.dp)
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            Box(modifier = Modifier.fillMaxWidth()) {
+                ZoomableTree(tree = tree!!, isMaximized = isMaximized)
 
-            ) {
-                TreeDrawer(tree = tree!!)
+                IconButton(
+                    onClick = { isMaximized = !isMaximized },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .background(Color.White, shape = CircleShape)
+                        .zIndex(2f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Maximizar"
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun ZoomableTree(tree: TreeNode, isMaximized: Boolean) {
+    var scale by remember { mutableStateOf(1f) }
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+
+    val heightModifier = if (isMaximized) Modifier.fillMaxHeight() else Modifier.height(600.dp)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(heightModifier)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    scale *= zoom
+                    offsetX += pan.x
+                    offsetY += pan.y
+                }
+            }
+    ) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    translationX = offsetX,
+                    translationY = offsetY
+                )
+        ) {
+            val center = Offset(size.width / 2, 60f)
+            drawTree(tree, center, size.width / 2)
         }
     }
 }
