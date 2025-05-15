@@ -183,7 +183,7 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 ZoomableTree(tree = tree!!, isMaximized = isMaximized)
 
-                IconButton(
+               /* IconButton(
                     onClick = { isMaximized = !isMaximized },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -195,11 +195,11 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
                         imageVector = Icons.Filled.ArrowDropDown,
                         contentDescription = "Maximizar"
                     )
-                }
+                */}
             }
         }
     }
-}
+//}
 
 @Composable
 fun ZoomableTree(tree: TreeNode, isMaximized: Boolean) {
