@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.proyectocalculadora.ui.theme.ProyectoCalculadoraTheme
 import java.util.*
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -211,12 +213,13 @@ fun ZoomableTree(tree: TreeNode, isMaximized: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .then(heightModifier)
+            .clip(shape = RectangleShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    scale *= zoom
-                    offsetX += pan.x
-                    offsetY += pan.y
+                detectTransformGestures { _, pan: Offset, zoom: Float, _ ->
+                    scale = (scale * zoom).coerceIn(0.5f, 3f)
+                    offsetX = (offsetX + pan.x).coerceIn(-500f, 500f)
+                    offsetY = (offsetY + pan.y).coerceIn(-500f, 500f)
                 }
             }
     ) {
@@ -235,6 +238,7 @@ fun ZoomableTree(tree: TreeNode, isMaximized: Boolean) {
         }
     }
 }
+
 @Composable
 fun CalculatorButtons(
     onButtonClick: (String) -> Unit,
