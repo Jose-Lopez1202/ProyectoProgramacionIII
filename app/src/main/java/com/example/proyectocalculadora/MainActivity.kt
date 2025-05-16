@@ -1,15 +1,10 @@
 package com.example.proyectocalculadora
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.zIndex
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.Icons
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.ui.graphics.graphicsLayer
@@ -182,7 +177,6 @@ fun ExpressionCalculatorApp(modifier: Modifier = Modifier) {
         if (showTree && tree != null) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 ZoomableTree(tree = tree!!, isMaximized = isMaximized)
-
                /* IconButton(
                     onClick = { isMaximized = !isMaximized },
                     modifier = Modifier
@@ -314,14 +308,12 @@ fun androidx.compose.ui.graphics.drawscope.DrawScope.drawTree(
     val nodeColor = if (node.isOperator) Color(0xFF2196F3) else Color(0xFFE3F2FD)
     val borderColor = Color(0xFF1976D2)
 
-    // Dibujar círculo del nodo
     drawCircle(
         color = nodeColor,
         radius = nodeRadius,
         center = position
     )
 
-    // Dibujar borde del círculo
     drawCircle(
         color = borderColor,
         radius = nodeRadius,
